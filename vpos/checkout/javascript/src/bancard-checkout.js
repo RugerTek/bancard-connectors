@@ -12,7 +12,7 @@ const Settings = {
 };
 
 const internalMethods = {
-  redirect: (data) => {
+  redirect: (data, callback) => {
     const { message, details, return_url: returnUrl } = data;
 
     let url = internalMethods.addParamToUrl(returnUrl, 'status', message);
@@ -21,7 +21,11 @@ const internalMethods = {
       url = internalMethods.addParamToUrl(url, 'description', details);
     }
 
-    window.location.replace(url);
+    if (callback != null){
+      callback(data);
+    } else {
+      window.location.replace(url);
+    }
   },
 
   updateMinHeight: (iframeHeight, divId) => {
@@ -29,11 +33,11 @@ const internalMethods = {
     iframe.style.minHeight = `${iframeHeight}px`;
   },
 
-  setListener: (divId) => {
-    window.addEventListener('message', e => internalMethods.responseHandler(e, divId));
+  setListener: (divId, callback) => {
+    window.addEventListener('message', e => internalMethods.responseHandler(e, divId, callback));
   },
 
-  responseHandler: (event, divId) => {
+  responseHandler: (event, divId, callback) => {
     if (event.origin !== constants.BANCARD_URL) {
       return;
     }
@@ -44,7 +48,7 @@ const internalMethods = {
     }
 
     if (Settings.handler === 'default') {
-      internalMethods.redirect(event.data);
+      internalMethods.redirect(event.data, callback);
     } else {
       Settings.handler(event.data);
     }
@@ -107,7 +111,7 @@ const internalMethods = {
     });
   },
 
-  initializeIframe: (divId, iFrameUrl, options) => {
+  initializeIframe: (divId, iFrameUrl, options, callback) => {
     if (typeof divId !== 'string' || divId === '') {
       throw new exceptions.InvalidParameter('Div id');
     }
@@ -142,11 +146,11 @@ const internalMethods = {
     iframeContainer.innerHTML = '';
     iframeContainer.appendChild(iframe);
 
-    internalMethods.setListener(divId);
+    internalMethods.setListener(divId, callback);
   },
 
   createForm: ({
-    divId, processId, options, url,
+    divId, processId, options, url, callback
   }) => {
     if (typeof processId !== 'string' || processId === '') {
       throw new exceptions.InvalidParameter('Process id');
@@ -154,7 +158,7 @@ const internalMethods = {
 
     const iFrameUrl = internalMethods.addParamToUrl(url, 'process_id', processId);
 
-    internalMethods.initializeIframe(divId, iFrameUrl, options);
+    internalMethods.initializeIframe(divId, iFrameUrl, options, callback);
   },
 
   loadPinPad: ({
@@ -179,10 +183,11 @@ const internalMethods = {
 class Bancard {
   get Checkout() {
     return {
-      createForm: (divId, processId, options) => {
+      createForm: (divId, processId, options, callback) => {
         this.divId = divId;
+        this.callback = callback;
         internalMethods.createForm({
-          divId, processId, options, url: CHECKOUT_IFRAME_URL,
+          divId, processId, options, url: CHECKOUT_IFRAME_URL, callback: callback
         });
       },
     };
