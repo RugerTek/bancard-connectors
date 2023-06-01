@@ -196,10 +196,10 @@ class Bancard {
 
   get Cards() {
     return {
-      createForm: (divId, processId, options) => {
+      createForm: (divId, processId, options, callback) => {
         this.divId = divId;
         internalMethods.createForm({
-          divId, processId, options, url: NEW_CARD_IFRAME_URL,
+          divId, processId, options, url: NEW_CARD_IFRAME_URL, callback: callback
         });
       },
     };
@@ -207,10 +207,10 @@ class Bancard {
 
   get Zimple() {
     return {
-      createForm: (divId, processId, options) => {
+      createForm: (divId, processId, options, callback) => {
         this.divId = divId;
         internalMethods.createForm({
-          divId, processId, options, url: ZIMPLE_IFRAME_URL,
+          divId, processId, options, url: ZIMPLE_IFRAME_URL, callback: callback
         });
       },
     };
@@ -218,10 +218,10 @@ class Bancard {
 
   get Confirmation() {
     return {
-      loadPinPad: (divId, aliasToken, options) => {
+      loadPinPad: (divId, aliasToken, options, callback) => {
         this.divId = divId;
         internalMethods.loadPinPad({
-          divId, aliasToken, options, url: CONFIRMATION_IFRAME_URL,
+          divId, aliasToken, options, url: CONFIRMATION_IFRAME_URL, callback: callback
         });
       },
     };
@@ -229,10 +229,10 @@ class Bancard {
 
   get Preauthorization() {
     return {
-      createForm: (divId, processId, options) => {
+      createForm: (divId, processId, options, callback) => {
         this.divId = divId;
         internalMethods.createForm({
-          divId, processId, options, url: PREAUTHORIZATION_IFRAME_URL,
+          divId, processId, options, url: PREAUTHORIZATION_IFRAME_URL, callback: callback
         });
       },
     };
